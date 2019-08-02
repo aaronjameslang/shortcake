@@ -4,9 +4,6 @@ const slugToId = require('../slugToId')
 
 exports.handler = async event => {
   const { slug } = event.pathParameters
-  if (!slug) {
-    throw new Error()
-  }
   const id = slugToId(slug)
   const initialUrl = await selectShortening(id)
   if (!initialUrl) {

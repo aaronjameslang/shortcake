@@ -96,6 +96,10 @@ CREATE TABLE shortening (
 
 - There is currently on one deployment environment, which means the tests and prod app use the same database. Create seperate environments.
 
+- Redirect the root path to something useful like the readme
+
+- Return 404 for non-routes instead of AWS's `Missing Authentication Token`
+
 - See `TODO`s in code
 
 ### Scaling Issues

@@ -2,7 +2,7 @@ module.exports = id => {
   if (id <= 0) {
     throw new Error('id <= 0')
   }
-  if (id > 0xFFFFFFFF) {
+  if (id > 0x7FFFFFFF) {
     throw new Error('id > 0x7FFFFFFF')
   }
   /**

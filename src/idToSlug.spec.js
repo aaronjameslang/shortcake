@@ -20,3 +20,11 @@ for (const id in fixtures) {
     expect(idToSlug(id)).toBe(slug)
   })
 }
+
+test(`idToSlug(0) => Error`, () => {
+  expect(() => idToSlug(0)).toThrow()
+})
+
+test(`idToSlug(0x80000000) => Error`, () => {
+  expect(() => idToSlug(0x80000000)).toThrow()
+})
