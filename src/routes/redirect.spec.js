@@ -24,3 +24,26 @@ test('GET /{slug}', () => {
     })
   })
 })
+
+test('GET /{slug} 404', () => {
+  return ll.execute({
+    event: {
+      pathParameters: {
+        slug: 'B_____'
+      },
+      requestContext: {
+        httpMethod: 'GET',
+        resourcePath: '/{slug}'
+      }
+    },
+    lambdaPath: 'src/index.js'
+  }).then(res => {
+    expect(res.statusCode).toBe(404)
+    expect(res.headers.Location).toBeUndefined()
+    const data = JSON.parse(res.body)
+    expect(data).toEqual({
+      cake: null,
+      errorMessage: 'Not Found'
+    })
+  })
+})

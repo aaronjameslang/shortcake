@@ -9,6 +9,16 @@ exports.handler = async event => {
   }
   const id = slugToId(slug)
   const initialUrl = await selectShortening(id)
+  if (!initialUrl) {
+    return new ApiBuilder.ApiResponse(
+      {
+        cake: null,
+        errorMessage: 'Not Found'
+      },
+      {},
+      404
+    )
+  }
   return new ApiBuilder.ApiResponse(
     {
       cake: '🍰',
