@@ -1,5 +1,5 @@
 {
-  "name": "shortcake",
+  "name": "shortcake-api",
   "version": "0.0.1",
   "description": "A URL Shortener, but with cake 🍰",
   "scripts": {
@@ -9,7 +9,7 @@
     "pretest": "npm run lint:fix",
     "test": "jest"
   },
-  "repository": "aaronjameslang/shortcake",
+  "repository": "aaronjameslang/shortcake-api",
   "keywords": [
     "api",
     "cake",

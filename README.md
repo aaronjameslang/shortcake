@@ -1,4 +1,4 @@
-# 🍰 shortcake [![Build Status](http://travis-ci.org/aaronjameslang/shortcake.svg?branch=master)](//travis-ci.org/aaronjameslang/shortcake) [![Known Vulnerabilities](http://snyk.io/test/github/aaronjameslang/shortcake/badge.svg)](//snyk.io/test/github/aaronjameslang/shortcake)
+# 🍰 shortcake-api [![Build Status](http://travis-ci.org/aaronjameslang/shortcake.svg?branch=master)](//travis-ci.org/aaronjameslang/shortcake) [![Known Vulnerabilities](http://snyk.io/test/github/aaronjameslang/shortcake/badge.svg)](//snyk.io/test/github/aaronjameslang/shortcake)
 shortcake is a url shortener, but with cake
 
 ## Usage
