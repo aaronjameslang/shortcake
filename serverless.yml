@@ -7,11 +7,13 @@ provider:
   name: aws
   runtime: nodejs10.x
 # stage: dev
-# region: us-east-1
+# region: us-east-1 # read from config js?
   iamRoleStatements:
   - Effect: Allow
-    Action: secretsmanager:GetSecretValue
-    Resource: { Ref: secret0 }
+    Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    Resource: { Fn::GetAtt: [db0, Arn] }
 
 functions:
   function0:
@@ -24,18 +26,18 @@ functions:
       - http: POST /shortening
       - http:
           method: GET
-          path: /shortening/{slug}
+          path: /shortening/{id}
           request:
             parameters:
               paths:
-                slug: true
+                id: true
       - http:
           method: GET
-          path: /{slug}
+          path: /{id}
           request:
             parameters:
               paths:
-                slug: true
+                id: true
 
 custom:
   customDomain:
@@ -48,20 +50,19 @@ resources:
       Type: AWS::ApiGateway::RestApi
       Properties:
         Name: ${self:service}-${self:provider.stage}
-    secret0:
-      Type: AWS::SecretsManager::Secret
+    db0:
+      Type: AWS::DynamoDB::Table
       Properties:
-        Name: ${self:service}-${self:provider.stage}
-        SecretString: "{\"change\":\"me\"}"
-    # db0:
-    #   Type: AWS::RDS::DBInstance
-    #   Properties:
-    #     AllocatedStorage: 20
-    #     DBInstanceClass: db.t3.micro
-    #     Engine: postgres
-    #     MasterUserPassword: ${env:DB_PASSWORD}
-    #     MasterUsername: ${env:DB_USERNAME}
-    #     PubliclyAccessible: true
+        AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10 # TODO stage specific?
+          WriteCapacityUnits: 10
+        TableName: shortcake-shortening
     userCi:
       Type: AWS::IAM::User
       Properties:
@@ -69,7 +70,9 @@ resources:
           - PolicyDocument:
               Statement:
                 Effect: Allow
-                Action: secretsmanager:GetSecretValue
-                Resource: { Ref: secret0 }
+                Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                Resource: { Fn::GetAtt: [db0, Arn] }
             PolicyName: shortcake-ci
         UserName: shortcake-ci

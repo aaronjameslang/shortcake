@@ -15,29 +15,29 @@ Request:
 Reponse:
 ```json
 {
-  "id": 1,
+  "id": "test",
   "initialUrl": "https://example.com",
-  "shorterUrl": "s.ajla.ng/B"
+  "shorterUrl": "s.ajla.ng/test"
 }
 ```
 
 ### Retrieve original URL
 
 Request:
-`GET  https://s.ajla.ng/shortening/B`
+`GET  https://s.ajla.ng/shortening/test`
 
 Reponse:
 ```json
 {
-  "id": 1,
+  "id": "test",
   "initialUrl": "https://example.com",
-  "shorterUrl": "s.ajla.ng/B"
+  "shorterUrl": "s.ajla.ng/test"
 }
 ```
 
 ### Redirection
 
-Visit [`https://s.ajla.ng/B`](https://s.ajla.ng/B) to be redirected
+Visit [`https://s.ajla.ng/test`](https://s.ajla.ng/test) to be redirected
 
 ## Contribution [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -49,24 +49,20 @@ The service is hosted on AWS, and deployed using serverless.
 
 All resources are in the serverless stack. New resources must be added to the serveress template, not created adhoc.
 
-Serverless will create the secret, but you must populate it after the first deploy. This is where the DB credentials are stored.
+### Decisions
 
-The postgres DB is currently not part of the IaC, due to time constraints. It is a single database and table:
+- Earlier interations were back by a PostgreSQL DB but this was expensive.
+  We have since moved to DynamoDB, however in doing so lost auto-increment IDs,
+  and so switched to using random IDs instead. This has made the shortened links
+  a uniform length, and so a compromise between length and collision safety was made.
+  In a production environment priorities would be different and so an RDB would
+  likely be preferable.
 
-```sql
-CREATE DATABASE shortcake;
-
-CREATE TABLE shortening (
-  id SERIAL PRIMARY KEY,
-  url TEXT
-);
-```
+  For now ID's are 4 random base64 characters 
 
 ### Potential Improvements
 
 - Check for exisiting matching db entries before creating a new one. This would slow down url shortening but reduce needed storage space. Unlikely to be beneficial overall.
-
-- Consider using the `pguri` postgres package. We are not doing anything clever with the urls so this is unlikely to offer much.
 
 - Publish API documentation.
 
@@ -82,17 +78,9 @@ CREATE TABLE shortening (
 
 - Add more tests for unhappy paths.
 
-- Postgres is expensive, consider a free alternative such as DynamoDB.
-
-- Investigate how the DB will behave when the id column reaches it's max. Consider adding monitoring to alert when this is soon.
-
 - Investigate if storing/redirecting to some url schemes (e.g. ftp, irc) is exploitable and should be prevented.
 
 - Exclude docs and such from deployed lambda.
-
-- Since the slugs are predictable, all the original links are public. Any sensitive query paramters are exposed.
-
-- The spec requires that shortenings are retrieved by slug, rather than ID, which is unusual for a REST API. Consider changing.
 
 - There is currently on one deployment environment, which means the tests and prod app use the same database. Create seperate environments.
 
@@ -106,29 +94,13 @@ CREATE TABLE shortening (
 
 #### Space
 
-IDs are currently 31 bit intergers. That is, they are positive signed 32 bit integers. This is realised in the DB column type,
-and the currrent application logic relies on this maximum. This limit can be increased, but will cost some complexity. At a rate of one entry per second, this limit should last almost 35 years.
+Curently IDs are 3 random bytes. At one request per second, we will start
+seeing collisions at a rate of 10% in less than 3 weeks. Clearly this is not suitable for production.
 
 Setting up automatic expiry of old links and reusing IDs will buy us time if needed, and prevent us paying for storage that we no longer need.
 
-Currently the maximum length of a slug is 6 characters. If this limit is increased or more routes are added, generated slugs could coincide with other routes and cause problems. One solution would be to host the redirection service on a seperate subdomain to the api proper.
+Currently the maximum length of an ID is 4 characters. If this limit is increased or more routes are added, generated IDs could coincide with other routes and cause problems. One solution would be to host the redirection service on a seperate subdomain to the api proper.
 
 #### Time
 
 Consider how our redirects are being cached (temporary/permant). Improving caching would reduce load and user wait times, but may not be feasible if we start reusing IDs.
-
-Pooling database connections may improve performance under load.
-
-## Specification
-
-[https://github.com/paybyphone/node-shortener-api-test](https://github.com/paybyphone/node-shortener-api-test)
-
-[PDF Version](spec.pdf)
-
-After inquiry futher clarifications included:
-
-> Having an ID  is part of spec, where consumers of this API could use it as a unique identifier for the shortened record
-
-> The URI and payload is an example and do not specify a coding standard or a spec
-
-In light of this the API diverges from the spec for the sake of adhering to convetions and minimising suprise.

@@ -1,14 +1,14 @@
 const ll = require('lambda-local')
 
-test('GET /{slug}', () => {
+test('GET /{id}', () => {
   return ll.execute({
     event: {
       pathParameters: {
-        slug: 'B'
+        id: 'test'
       },
       requestContext: {
         httpMethod: 'GET',
-        resourcePath: '/{slug}'
+        resourcePath: '/{id}'
       }
     },
     lambdaPath: 'src/index.js'
@@ -17,23 +17,23 @@ test('GET /{slug}', () => {
     expect(res.headers.Location).toBe('https://example.com')
     const data = JSON.parse(res.body)
     expect(data).toEqual({
-      id: 1,
+      id: 'test',
       cake: '🍰',
       initialUrl: 'https://example.com',
-      shorterUrl: 's.ajla.ng/B'
+      shorterUrl: 's.ajla.ng/test'
     })
   })
 })
 
-test('GET /{slug} 404', () => {
+test('GET /{id} 404', () => {
   return ll.execute({
     event: {
       pathParameters: {
-        slug: 'B_____'
+        id: 'test-404'
       },
       requestContext: {
         httpMethod: 'GET',
-        resourcePath: '/{slug}'
+        resourcePath: '/{id}'
       }
     },
     lambdaPath: 'src/index.js'

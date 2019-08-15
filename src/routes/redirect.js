@@ -1,10 +1,8 @@
 const ApiBuilder = require('claudia-api-builder')
 const selectShortening = require('../db/selectShortening')
-const slugToId = require('../slugToId')
 
 exports.handler = async event => {
-  const { slug } = event.pathParameters
-  const id = slugToId(slug)
+  const { id } = event.pathParameters
   const initialUrl = await selectShortening(id)
   if (!initialUrl) {
     return new ApiBuilder.ApiResponse(
@@ -21,7 +19,7 @@ exports.handler = async event => {
       cake: '🍰',
       id,
       initialUrl,
-      shorterUrl: 's.ajla.ng/' + slug
+      shorterUrl: 's.ajla.ng/' + id
     },
     { Location: initialUrl },
     301
@@ -29,5 +27,5 @@ exports.handler = async event => {
 }
 
 exports.mount = api => {
-  api.get('/{slug}', exports.handler)
+  api.get('/{id}', exports.handler)
 }

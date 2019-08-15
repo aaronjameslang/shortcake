@@ -1,6 +1,5 @@
 const ApiBuilder = require('claudia-api-builder')
 const URL = require('url').URL
-const idToSlug = require('../idToSlug')
 const insertShortening = require('../db/insertShortening')
 
 exports.handler = async event => {
@@ -21,15 +20,14 @@ exports.handler = async event => {
     )
   }
   const id = await insertShortening(initialUrl)
-  const slug = idToSlug(id)
   return new ApiBuilder.ApiResponse(
     {
       cake: '🍰',
       id,
       initialUrl,
-      shorterUrl: 's.ajla.ng/' + slug
+      shorterUrl: 's.ajla.ng/' + id
     },
-    { Location: '//s.ajla.ng/shortening/' + slug },
+    { Location: '//s.ajla.ng/shortening/' + id },
     201
   )
 }

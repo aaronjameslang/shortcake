@@ -1,14 +1,14 @@
 const ll = require('lambda-local')
 
-test('GET /shortening/{slug}', () => {
+test('GET /shortening/{id}', () => {
   return ll.execute({
     event: {
       pathParameters: {
-        slug: 'B'
+        id: 'test'
       },
       requestContext: {
         httpMethod: 'GET',
-        resourcePath: '/shortening/{slug}'
+        resourcePath: '/shortening/{id}'
       }
     },
     lambdaPath: 'src/index.js'
@@ -16,23 +16,23 @@ test('GET /shortening/{slug}', () => {
     expect(res.statusCode).toBe(200)
     const data = JSON.parse(res.body)
     expect(data).toEqual({
-      id: 1,
+      id: 'test',
       cake: '🍰',
       initialUrl: 'https://example.com',
-      shorterUrl: 's.ajla.ng/B'
+      shorterUrl: 's.ajla.ng/test'
     })
   })
 })
 
-test('GET /shortening/{slug} 404', () => {
+test('GET /shortening/{id} 404', () => {
   return ll.execute({
     event: {
       pathParameters: {
-        slug: 'B_____'
+        id: 'invalid-id'
       },
       requestContext: {
         httpMethod: 'GET',
-        resourcePath: '/shortening/{slug}'
+        resourcePath: '/shortening/{id}'
       }
     },
     lambdaPath: 'src/index.js'

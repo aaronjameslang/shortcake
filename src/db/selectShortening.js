@@ -1,12 +1,19 @@
-const getDb = require('./getDb')
+const AWS = require('aws-sdk')
+const util = require('util')
+
+const { TableName, region } = require('./config')
 
 /**
- * @returns {string|undefined}
+ * @returns {string|undefined} url
  */
 module.exports = async id => {
-  const db = await getDb()
-  const sql = 'SELECT url FROM shortening WHERE id = $1'
-  const res = await db.query(sql, [id])
-  await db.end()
-  return res.rows[0] && res.rows[0].url
+  const dynamodb = new AWS.DynamoDB({ apiVersion: '2012-08-10', region })
+  const getItem = util.promisify(dynamodb.getItem.bind(dynamodb)) // TODO performance?
+  const { Item } = await getItem({
+    Key: {
+      id: { S: id }
+    },
+    TableName
+  })
+  return Item && Item.url.S
 }

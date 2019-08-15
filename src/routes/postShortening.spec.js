@@ -15,7 +15,7 @@ test('POST /shortening', () => {
     expect(res.statusCode).toBe(201)
     const data = JSON.parse(res.body)
     expect(data.cake).toBeTruthy()
-    expect(data.id).toBeGreaterThan(0)
+    expect(data.id).toHaveLength(4)
     expect(data.initialUrl).toBe(initialUrl)
     expect(data.shorterUrl).toBeTruthy()
   })

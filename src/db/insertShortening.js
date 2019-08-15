@@ -1,12 +1,22 @@
-const getDb = require('./getDb')
+const AWS = require('aws-sdk')
+const util = require('util')
+
+const { TableName, region } = require('./config')
+const newId = require('./newId')
 
 /**
- * @returns {number} id
+ * @returns {string} id
  */
 module.exports = async url => {
-  const db = await getDb()
-  const sql = 'INSERT INTO shortening(url) VALUES($1) RETURNING id'
-  const res = await db.query(sql, [url])
-  await db.end()
-  return res.rows[0].id
+  const dynamodb = new AWS.DynamoDB({ apiVersion: '2012-08-10', region })
+  const putItem = util.promisify(dynamodb.putItem.bind(dynamodb)) // TODO performance?
+  const id = await newId()
+  await putItem({
+    Item: {
+      id: { S: id },
+      url: { S: url }
+    },
+    TableName
+  })
+  return id
 }
