@@ -23,14 +23,14 @@
   "private": true,
   "dependencies": {
     "claudia-api-builder": "^4.1.2",
-    "pg": "^7.12.0"
+    "pg": "^7.12.1"
   },
   "devDependencies": {
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "lambda-local": "^1.6.3",
-    "serverless": "^1.49.0",
-    "serverless-domain-manager": "^3.2.6",
-    "standard": "^13.1.0"
+    "serverless": "^1.54.0",
+    "serverless-domain-manager": "^3.3.0",
+    "standard": "^14.3.1"
   },
   "standard": {
     "env": [
